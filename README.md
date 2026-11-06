@@ -10,6 +10,17 @@ mvn quarkus:dev        # http://localhost:8080, with import.sql + bulk.sql (200,
 mvn test               # starts its own PostgreSQL 17 with Dev Services, only needs Docker
 ```
 
+### Native mode
+
+```shell
+mvn verify -Dnative -Dquarkus.native.container-build=true
+```
+
+Builds a native executable inside a Mandrel container, so only Docker is needed, not GraalVM, and runs the `*IT` tests against it.
+The `*IT` classes run the same tests as `RsqlDemoTest`, `TypesAndSortingTest`, `LimitsTest` and `ConfiguredLimitsTest`, through HTTP.
+`PerformanceTest` only runs in JVM mode, as it uses the `EntityManager` and calls `Rsql` directly.
+The build takes about 3 minutes and needs about 4 GB of memory.
+
 To test the local version of the extension, run `mvn install` in `quarkus-rsql`, then add
 `-Dquarkus-rsql.version=1.2.0-SNAPSHOT` to the commands above.
 
