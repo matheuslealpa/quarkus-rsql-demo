@@ -15,6 +15,8 @@
         <!-- Use 1.2.0-SNAPSHOT, after mvn install in quarkus-rsql, to test the local version -->
         <quarkus-rsql.version>1.1.0</quarkus-rsql.version>
         <surefire-plugin.version>3.5.4</surefire-plugin.version>
+        <skipITs>true</skipITs>
+        <native.surefire.skip>false</native.surefire.skip>
     </properties>
 
     <dependencyManagement>
@@ -86,11 +88,50 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${surefire-plugin.version}</version>
                 <configuration>
+                    <skipTests>${native.surefire.skip}</skipTests>
                     <systemPropertyVariables>
                         <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
                     </systemPropertyVariables>
                 </configuration>
             </plugin>
+            <plugin>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>${surefire-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <systemPropertyVariables>
+                        <native.image.path>${project.build.directory}/${project.build.finalName}-runner</native.image.path>
+                        <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
+                        <maven.home>${maven.home}</maven.home>
+                    </systemPropertyVariables>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <!-- mvn verify -Dnative: builds a native executable and runs the *IT tests against it -->
+        <profile>
+            <id>native</id>
+            <activation>
+                <property>
+                    <name>native</name>
+                </property>
+            </activation>
+            <properties>
+                <quarkus.native.enabled>true</quarkus.native.enabled>
+                <quarkus.package.jar.enabled>false</quarkus.package.jar.enabled>
+                <skipITs>false</skipITs>
+                <!-- the JVM tests already ran in mvn test -->
+                <native.surefire.skip>true</native.surefire.skip>
+            </properties>
+        </profile>
+    </profiles>
 </project>
