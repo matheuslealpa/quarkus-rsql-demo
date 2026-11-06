@@ -34,7 +34,7 @@ public class FruitResource {
         return Fruit.find(query.query(), query.parameters()).count();
     }
 
-    /** API pública: só aceita alguns seletores, tanto no filtro quanto no sort. */
+    /** Public API: accepts only some selectors, in the filter and in the sort. */
     @GET
     @Path("/public")
     public List<Fruit> publicList(@QueryParam("filter") String filter, @QueryParam("sort") String sort) {

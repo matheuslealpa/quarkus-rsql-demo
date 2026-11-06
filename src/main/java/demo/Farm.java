@@ -20,7 +20,7 @@ public class Farm extends PanacheEntity {
 
     public boolean organic;
 
-    /** Nunca pode ser filtrado: um filtro como ownerToken=gt=m vazaria o valor. */
+    /** Can never be filtered: a filter such as ownerToken=gt=m would leak its value. */
     @RsqlIgnore
     @JsonIgnore
     public String ownerToken;
